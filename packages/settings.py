@@ -4,7 +4,7 @@ import tweepy
 problems_db_name = r"db\problems.db"
 
 # Refresh interval (sec)
-refresh_interval = 15
+refresh_interval = 600
 
 def twitter_api() -> tweepy.API:
     """
