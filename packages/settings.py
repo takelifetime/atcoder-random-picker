@@ -1,6 +1,9 @@
+import os
 import tweepy
+import psycopg2
+from sqlalchemy import create_engine
 
-# Location of database
+# Location of SQLite3 database
 problems_db_name = r"db\problems.db"
 
 # Refresh interval (sec)
@@ -28,6 +31,11 @@ def twitter_api() -> tweepy.API:
 
     return api
 
+def postgre_connection():
+    dsn = os.environ['DATABASE_URL']
+    return psycopg2.connect(dsn)
+
+sql_engine = create_engine(os.environ['DATABASE_URL'])
 
 word_diff = {\
 "灰": {"diff_lower": -9999, "diff_upper": 400},

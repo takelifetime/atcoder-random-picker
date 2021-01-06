@@ -1,6 +1,7 @@
 import json
 import requests
 import sqlite3
+import psycopg2
 import os
 import pandas as pd
 
@@ -48,12 +49,6 @@ def getjson(url: str, save_cache: bool = False) -> str:
     return response.text
 
 
-# Move to directory in which this file exists
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-# Make connection with DB
-db_conn = sqlite3.connect(packages.settings.problems_db_name)
-
 # Fetch the json and convert to pandas dataframe
 df_model = pd.read_json(getjson(json_urls[0]))
 df_detail = pd.read_json(getjson(json_urls[1]))
@@ -64,8 +59,6 @@ df_model = df_model.T
 # Merge the two dataframes into one with problem names as a key
 df = pd.merge(df_model, df_detail, left_index=True, right_on="id")
 
-# Update problems table
-df.to_sql(table_name, db_conn, if_exists="replace")
-
-# Close the connection with DB
-db_conn.close()
+# Update DB
+with packages.settings.sql_engine.begin() as conn:
+    df.to_sql(table_name, conn, if_exists="replace", method="multi")
