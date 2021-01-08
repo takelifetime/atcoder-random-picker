@@ -55,7 +55,9 @@ with packages.settings.postgre_connection() as db_conn:
         mention_timestamp = datetime.datetime.fromtimestamp(mention.created_at.timestamp())
         current_time = datetime.datetime.now()
 
-        if current_time - mention_timestamp > datetime.timedelta(hours=9) + datetime.timedelta(seconds=packages.settings.refresh_interval):
+        print(current_time - mention_timestamp)
+
+        if current_time - mention_timestamp > datetime.timedelta(seconds=packages.settings.refresh_interval):
             continue
 
         # List for piling up difficulty ranges
@@ -63,6 +65,10 @@ with packages.settings.postgre_connection() as db_conn:
 
         # Initialize mask with all True
         diff_mask = df["difficulty"] != None
+
+        # Prevent infinite loop caused by self mention
+        if "atcoder.jp" in mention.text:
+            continue
 
         # Find keyword in the given message
         for key in packages.settings.word_diff.keys():
@@ -92,8 +98,8 @@ with packages.settings.postgre_connection() as db_conn:
 
         response += geturl(chosen_problem)
 
-        print(mention.text)
-        print(f"@{mention.user.screen_name} はいよ！\n")
+        print("Responding to "mention.text)
+        print(f"@{mention.user.screen_name} はいよ！")
         print(f'{chosen_problem.iloc[0]["contest_id"].upper()} {chosen_problem.iloc[0]["title"]}')
         print(geturl(chosen_problem))
 
