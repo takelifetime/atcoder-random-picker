@@ -98,7 +98,7 @@ with packages.settings.postgre_connection() as db_conn:
 
         response += geturl(chosen_problem)
 
-        print("Responding to "mention.text)
+        print("Responding to " + mention.text)
         print(f"@{mention.user.screen_name} はいよ！")
         print(f'{chosen_problem.iloc[0]["contest_id"].upper()} {chosen_problem.iloc[0]["title"]}')
         print(geturl(chosen_problem))
